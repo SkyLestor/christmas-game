@@ -14,7 +14,6 @@
             <div id="score" class="score">Score: 0</div>
         </div>
         <div class="test">
-            asd
         </div>
     </body>
 </html>

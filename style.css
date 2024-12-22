@@ -24,7 +24,26 @@ body {
     position: absolute;
     width: 30px;
     height: 30px;
+}
+
+.small{
     background-color: green;
+}
+
+.medium{
+    background-color: red;
+}
+
+.big{
+    background-color: blue;
+}
+
+.coal{
+    background-color: rgb(255, 0, 221);
+}
+
+.bomb{
+    background-color: rgb(54, 7, 85);
 }
 
 .hearts {

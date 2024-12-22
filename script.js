@@ -26,37 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // padashti podaruci + tochki
     function createGift() {
         const gift = document.createElement('div');
-        gift.classList.add('gift');
-        gift.style.left = Math.random() * (gameContainer.clientWidth - 30) + 'px';
-        gameContainer.appendChild(gift);
-
-        let giftY = 0;
-
-        const giftFallInterval = setInterval(() => {
-            giftY += 5;
-            gift.style.top = giftY + 'px';
-
-            if (isGiftCaught(gift)) {
-                score += 5;
-                scoreDisplay.textContent = 'Score: ' + score;
-                gift.remove();
-                clearInterval(giftFallInterval);
-                createGift();
-            }
-
-            if (giftY > gameContainer.clientHeight) {
-                hearts -= 1;
-                heartsDisplay.textContent = '❤️'.repeat(hearts);
-                gift.remove();
-                clearInterval(giftFallInterval);
-                if (hearts === 0) {
-                    alert('Game Over! Your score: ' + score);
-                    location.reload();
-                } else {
-                    createGift();
-                }
-            }
-        }, 50);
+        fetch('spawnRates.php', {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(data => {
+            gift.classList.add('gift', data.class);
+            gift.style.left = Math.random() * (gameContainer.clientWidth - 30) + 'px';
+            gameContainer.appendChild(gift);
+            handleGiftMovement(gift, data);
+        })
+        .catch(error => console.error('Error spawning div:', error));
+        
     }
 
     //Proverqvame dali podaruka e hvanat
@@ -71,5 +52,72 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
+    function handleGiftMovement(gift, data){
+        let giftY = 0;
+
+        const giftFallInterval = setInterval(() => {
+            giftY += data.speed;
+            gift.style.top = giftY + 'px';
+
+            if (isGiftCaught(gift)) {
+                if (data.class === "bomb"){
+                    loseHeart();
+                }
+                score += data.value;
+                scoreDisplay.textContent = 'Score: ' + score;
+                gift.remove();
+                clearInterval(giftFallInterval);
+                checkIfGameLost()
+            }
+
+            if (giftY > gameContainer.clientHeight) {
+                // we don't lose hearts because of coal and bombs
+                if (data.value > 0){
+                    loseHeart();
+                }
+                checkIfGameLost()
+                gift.remove();
+                clearInterval(giftFallInterval);
+            }
+        }, 50);
+    }
+
+    function checkIfGameLost(){
+        if (hearts === 0) {
+            sendScoreAndUsernameToDatabaseHandle(score);
+            alert('Game Over! Your score: ' + score);
+            location.reload();
+        } else {
+            createGift();
+        }
+    }
+
+    function loseHeart(){
+        hearts -= 1;
+        heartsDisplay.textContent = '❤️'.repeat(hearts);
+    }
+
     createGift();
 });
+
+
+function sendScoreAndUsernameToDatabaseHandle(score) {
+    fetch('databaseHandle.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+            score: score,
+            username: "test", 
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:' + data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
