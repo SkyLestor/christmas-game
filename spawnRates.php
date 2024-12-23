@@ -1,19 +1,5 @@
 <?php
 
-$servername = "localhost";  // or '127.0.0.1'
-$username = "root";         // default MySQL user
-$password = "";             // default is empty (no password) unless set in XAMPP
-$dbname = "leaderboard";  // the name of the database you created
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
 
 $total_chances_pool = 100; //100% total
 
