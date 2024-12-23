@@ -46,7 +46,7 @@ $variants[3] = [
     "speed" => 12,
 ];
 $variants[4] = [
-    "value" => 10,
+    "value" => 0,
     "chance" => 50,
     "class" => "bomb",
     "speed" => 7,
